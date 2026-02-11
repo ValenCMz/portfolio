@@ -4,7 +4,7 @@ import Hero3D from "./Hero3D";
 
 export default function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 sm:px-6">
       {/* Background gradient */}
       <div
         className="absolute inset-0 z-0"
@@ -18,7 +18,7 @@ export default function HeroSection() {
       <Hero3D />
 
       {/* Content */}
-      <div className="relative z-10 text-center px-6">
+      <div className="relative z-10 text-center px-2 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -38,7 +38,7 @@ export default function HeroSection() {
           </h1>
 
           <motion.p
-            className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto mb-12"
+            className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-xl mx-auto mb-12"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 0.6 }}
@@ -47,7 +47,7 @@ export default function HeroSection() {
           </motion.p>
 
           <motion.div
-            className="flex gap-4 justify-center"
+            className="flex flex-col sm:flex-row gap-4 justify-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7, duration: 0.6 }}

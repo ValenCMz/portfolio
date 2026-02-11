@@ -27,7 +27,7 @@ const skills = [
 
 export default function About() {
   return (
-    <section id="about" className="py-24 relative noise-overlay">
+    <section id="about" className="py-24 px-6 relative noise-overlay">
       <div className="mx-auto max-w-6xl relative z-10">
         {" "}
         <div className="grid lg:grid-cols-2 gap-16 items-center">

@@ -1,12 +1,5 @@
 import { motion } from "framer-motion";
-import {
-  Mail,
-  Send,
-  ArrowRight,
-  Twitter,
-  Linkedin,
-  Github,
-} from "lucide-react";
+import { Mail, Send, ArrowRight, Linkedin, Github } from "lucide-react";
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
