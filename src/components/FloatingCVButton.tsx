@@ -30,7 +30,7 @@ export default function FloatingCVButton() {
         {/* Botón */}
         <motion.a
           href={cv}
-          download
+          download="Valentin Caminos Martinez.pdf"
           className="flex items-center justify-center w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
           onMouseEnter={() => setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}
