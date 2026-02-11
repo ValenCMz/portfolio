@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Download } from "lucide-react";
 import { useState } from "react";
-import cv from "@/assets/Valentin Caminos Martinez CV.pdf";
+import cv from "@/assets/Valentin Caminos Martinez.pdf";
 
 export default function FloatingCVButton() {
   const [showTooltip, setShowTooltip] = useState(false);
