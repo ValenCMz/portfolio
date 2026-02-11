@@ -1,13 +1,14 @@
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, MeshTransmissionMaterial } from "@react-three/drei";
 import * as THREE from "three";
 
 interface IcosahedronProps {
   mousePosition: React.MutableRefObject<{ x: number; y: number }>;
+  isMobile: boolean;
 }
 
-function Icosahedron({ mousePosition }: IcosahedronProps) {
+function Icosahedron({ mousePosition, isMobile }: IcosahedronProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const wireframeRef = useRef<THREE.LineSegments>(null);
 
@@ -43,16 +44,16 @@ function Icosahedron({ mousePosition }: IcosahedronProps) {
           <icosahedronGeometry args={[2, 1]} />
           <MeshTransmissionMaterial
             backside
-            samples={4}
-            thickness={0.5}
-            chromaticAberration={0.1}
-            anisotropy={0.3}
-            distortion={0.2}
-            distortionScale={0.5}
-            temporalDistortion={0.1}
-            iridescence={1}
+            samples={isMobile ? 2 : 4}
+            thickness={isMobile ? 0.3 : 0.5}
+            chromaticAberration={isMobile ? 0 : 0.1}
+            anisotropy={isMobile ? 0.1 : 0.3}
+            distortion={isMobile ? 0 : 0.2}
+            distortionScale={isMobile ? 0 : 0.5}
+            temporalDistortion={isMobile ? 0 : 0.1}
+            iridescence={isMobile ? 0.5 : 1}
             iridescenceIOR={1}
-            iridescenceThicknessRange={[0, 1400]}
+            iridescenceThicknessRange={isMobile ? [0, 700] : [0, 1400]}
             color="#0ef6ff"
             transmission={0.95}
             roughness={0.1}
@@ -73,17 +74,14 @@ function seededRandom(seed: number): number {
   return x - Math.floor(x);
 }
 
-function Particles() {
+function Particles({ isMobile }: { isMobile: boolean }) {
   const pointsRef = useRef<THREE.Points>(null);
-  const count = 1200;
+  const count = isMobile ? 300 : 1200;
 
   const particles = useMemo(() => {
     const positions = new Float32Array(count * 3);
 
     for (let i = 0; i < count; i++) {
-      // Distribución en un volumen detrás del icosaedro (z negativo = fondo)
-      // z: -25 a 0 (atrás de la escena, visible desde cámara en z=8)
-      // x, y: -15 a 15 (ancho del campo de visión)
       const x = (seededRandom(i * 7.1) - 0.5) * 30;
       const y = (seededRandom(i * 3.7 + 100) - 0.5) * 30;
       const z = seededRandom(i * 5.3 + 200) * -25;
@@ -94,7 +92,7 @@ function Particles() {
     }
 
     return positions;
-  }, []);
+  }, [count]);
 
   useFrame((state) => {
     if (pointsRef.current) {
@@ -122,6 +120,20 @@ function Particles() {
 
 export default function Hero3D() {
   const mousePosition = useRef({ x: 0, y: 0 });
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(
+        window.innerWidth < 768 ||
+          /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+      );
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -134,8 +146,8 @@ export default function Hero3D() {
     <div className="absolute inset-0 z-0" onMouseMove={handleMouseMove}>
       <Canvas
         camera={{ position: [0, 0, 8], fov: 45 }}
-        gl={{ antialias: true, alpha: true }}
-        dpr={[1, 1.5]}
+        gl={{ antialias: !isMobile, alpha: true }}
+        dpr={isMobile ? 1 : [1, 1.5]}
       >
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} intensity={1} color="#0ef6ff" />
@@ -145,8 +157,8 @@ export default function Hero3D() {
           color="#8b5cf6"
         />
 
-        <Particles />
-        <Icosahedron mousePosition={mousePosition} />
+        <Particles isMobile={isMobile} />
+        <Icosahedron mousePosition={mousePosition} isMobile={isMobile} />
       </Canvas>
     </div>
   );
