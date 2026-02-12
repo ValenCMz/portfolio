@@ -2,6 +2,13 @@ import { motion } from "framer-motion";
 import { ArrowDown } from "lucide-react";
 import Hero3D from "./Hero3D";
 
+const scrollToSection = (id: string) => {
+  const element = document.getElementById(id);
+  if (element) {
+    element.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+};
+
 export default function HeroSection() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 sm:px-6">
@@ -38,7 +45,7 @@ export default function HeroSection() {
           </h1>
 
           <motion.p
-            className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-xl mx-auto mb-12"
+            className="text-base sm:text-lg md:text-xl text-foreground max-w-xl mx-auto mb-12"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 0.6 }}
@@ -52,18 +59,20 @@ export default function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7, duration: 0.6 }}
           >
-            <a
-              href="#projects"
+            <button
+              type="button"
+              onClick={() => scrollToSection("projects")}
               className="px-8 py-3 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-all duration-300 hover:shadow-glow"
             >
               Ver Proyectos
-            </a>
-            <a
-              href="#contact"
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollToSection("contact")}
               className="px-8 py-3 border border-border text-foreground font-medium rounded-lg hover:border-primary hover:text-primary transition-all duration-300"
             >
               Contactar
-            </a>
+            </button>
           </motion.div>
         </motion.div>
       </div>

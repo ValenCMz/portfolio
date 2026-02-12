@@ -62,7 +62,7 @@ export default function Contact() {
             whileTap={{ scale: 0.98 }}
           >
             <Send className="w-5 h-5" />
-            Escríbeme
+            Contactame
             <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
           </motion.a>
 

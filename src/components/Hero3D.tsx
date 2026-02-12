@@ -18,57 +18,75 @@ function Icosahedron({ mousePosition, isMobile }: IcosahedronProps) {
   }, []);
 
   useFrame((state) => {
-    if (meshRef.current && wireframeRef.current) {
-      const targetRotationX = mousePosition.current.y * 0.5;
-      const targetRotationY = mousePosition.current.x * 0.5;
+    if (!meshRef.current || !wireframeRef.current) return;
 
-      meshRef.current.rotation.x = THREE.MathUtils.lerp(
-        meshRef.current.rotation.x,
-        targetRotationX + state.clock.elapsedTime * 0.1,
-        0.05
-      );
-      meshRef.current.rotation.y = THREE.MathUtils.lerp(
-        meshRef.current.rotation.y,
-        targetRotationY + state.clock.elapsedTime * 0.15,
-        0.05
-      );
+    const time = state.clock.elapsedTime;
 
-      wireframeRef.current.rotation.copy(meshRef.current.rotation);
-    }
+    const targetRotationX = isMobile
+      ? time * 0.12
+      : mousePosition.current.y * 0.5 + time * 0.1;
+
+    const targetRotationY = isMobile
+      ? time * 0.15
+      : mousePosition.current.x * 0.5 + time * 0.15;
+
+    meshRef.current.rotation.x = THREE.MathUtils.lerp(
+      meshRef.current.rotation.x,
+      targetRotationX,
+      0.05
+    );
+
+    meshRef.current.rotation.y = THREE.MathUtils.lerp(
+      meshRef.current.rotation.y,
+      targetRotationY,
+      0.05
+    );
+
+    wireframeRef.current.rotation.copy(meshRef.current.rotation);
   });
 
   return (
-    <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
+    <Float
+      speed={isMobile ? 1.2 : 2}
+      rotationIntensity={isMobile ? 0.15 : 0.2}
+      floatIntensity={isMobile ? 0.4 : 0.5}
+    >
       <group>
-        <mesh ref={meshRef}>
+        <mesh ref={meshRef} scale={isMobile ? 1.15 : 1}>
           <icosahedronGeometry args={[2, 1]} />
+
           <MeshTransmissionMaterial
             backside
-            samples={isMobile ? 2 : 4}
-            thickness={isMobile ? 0.3 : 0.5}
-            chromaticAberration={isMobile ? 0 : 0.1}
+            samples={isMobile ? 2 : 6}
+            resolution={isMobile ? 256 : 512}
+            thickness={isMobile ? 0.35 : 0.5}
+            chromaticAberration={isMobile ? 0.02 : 0.1}
             anisotropy={isMobile ? 0.1 : 0.3}
             distortion={isMobile ? 0 : 0.2}
             distortionScale={isMobile ? 0 : 0.5}
-            temporalDistortion={isMobile ? 0 : 0.1}
-            iridescence={isMobile ? 0.5 : 1}
+            temporalDistortion={0}
+            iridescence={isMobile ? 0.6 : 1}
             iridescenceIOR={1}
-            iridescenceThicknessRange={isMobile ? [0, 700] : [0, 1400]}
+            iridescenceThicknessRange={isMobile ? [0, 600] : [0, 1400]}
             color="#0ef6ff"
             transmission={0.95}
-            roughness={0.1}
+            roughness={0.15}
           />
         </mesh>
 
         <lineSegments ref={wireframeRef} geometry={wireframeGeometry}>
-          <lineBasicMaterial color="#0ef6ff" transparent opacity={0.4} />
+          <lineBasicMaterial
+            color="#0ef6ff"
+            transparent
+            opacity={isMobile ? 0.3 : 0.4}
+          />
         </lineSegments>
       </group>
     </Float>
   );
 }
 
-// Seeded random for consistent star distribution
+// Seeded random
 function seededRandom(seed: number): number {
   const x = Math.sin(seed) * 10000;
   return x - Math.floor(x);
@@ -76,7 +94,7 @@ function seededRandom(seed: number): number {
 
 function Particles({ isMobile }: { isMobile: boolean }) {
   const pointsRef = useRef<THREE.Points>(null);
-  const count = isMobile ? 300 : 1200;
+  const count = isMobile ? 220 : 1200;
 
   const particles = useMemo(() => {
     const positions = new Float32Array(count * 3);
@@ -95,10 +113,9 @@ function Particles({ isMobile }: { isMobile: boolean }) {
   }, [count]);
 
   useFrame((state) => {
-    if (pointsRef.current) {
-      pointsRef.current.rotation.y = state.clock.elapsedTime * 0.02;
-      pointsRef.current.rotation.x = state.clock.elapsedTime * 0.01;
-    }
+    if (!pointsRef.current) return;
+    pointsRef.current.rotation.y = state.clock.elapsedTime * 0.02;
+    pointsRef.current.rotation.x = state.clock.elapsedTime * 0.01;
   });
 
   return (
@@ -107,7 +124,7 @@ function Particles({ isMobile }: { isMobile: boolean }) {
         <bufferAttribute attach="attributes-position" args={[particles, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        size={0.03}
+        size={isMobile ? 0.04 : 0.03}
         color="#0ef6ff"
         transparent
         opacity={0.8}
@@ -136,9 +153,12 @@ export default function Hero3D() {
   }, []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isMobile) return;
+
     const rect = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
     const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+
     mousePosition.current = { x, y };
   };
 
@@ -153,7 +173,7 @@ export default function Hero3D() {
         <pointLight position={[10, 10, 10]} intensity={1} color="#0ef6ff" />
         <pointLight
           position={[-10, -10, -10]}
-          intensity={0.5}
+          intensity={0.6}
           color="#8b5cf6"
         />
 
